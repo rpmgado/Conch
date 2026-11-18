@@ -1,0 +1,30 @@
+[workspace]
+members = ["uniffi-bindgen"]
+resolver = "3"
+
+[package]
+name = "conch_core"
+version = "0.1.0"
+edition = "2024"
+description = "Conch 连接内核：SSH 连接、认证、主机密钥校验、PTY 会话与流控"
+publish = false
+license = "MIT"
+
+[lib]
+# lib：给 Rust 自己的测试/示例用；staticlib：链接进 Swift App；cdylib：给 uniffi-bindgen 读元数据
+crate-type = ["lib", "staticlib", "cdylib"]
+
+[dependencies]
+encoding_rs = "0.8.44"
+libc = "0.2"
+# des：开启 3des-cbc，连接老交换机等设备时需要
+russh = { version = "0.65.1", features = ["des"] }
+russh-sftp = "3.0.1"
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "net", "io-util", "fs"] }
+uniffi = "0.32.2"
+zmodem2 = "0.7.3"
+
+[profile.release]
+lto = "thin"

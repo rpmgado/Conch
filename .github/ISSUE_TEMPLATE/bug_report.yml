@@ -1,0 +1,31 @@
+name: Bug / 问题反馈
+description: Report a reproducible problem with demo data / 使用示例数据描述问题
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "安全漏洞请参考 SECURITY.md。不要上传真实主机地址、密码、密钥或未脱敏日志。"
+  - type: input
+    id: version
+    attributes:
+      label: Conch / macOS version
+      placeholder: "0.4.2 / macOS 27.2 / Apple M-series"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps / 复现步骤
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior / 预期与实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Redacted screenshots or logs / 脱敏截图或日志
+      description: Remove server addresses, usernames and secrets before attaching.

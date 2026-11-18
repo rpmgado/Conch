@@ -1,0 +1,17 @@
+# 构建产物
+core/target/
+app/.build/
+build/
+*.log
+.DS_Store
+# 用 Xcode 打开 Package.swift 时生成的工作区状态
+.swiftpm/
+
+# 由 scripts/build.sh 生成，不要手改
+app/RustLib/
+app/Sources/conch_coreFFI/include/
+app/Sources/Conch/Generated/
+
+.session-archive/
+
+.build-cache/

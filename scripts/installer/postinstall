@@ -1,0 +1,20 @@
+#!/bin/sh
+# 安装器装完 Conch.app 以后运行（root 身份）。$3 是装到的磁盘，一般是 /。
+# package.sh 打包时会把 ID 那一行的占位符换成 Info.plist 里的标识。
+#
+# 0.4.0 的第一版安装包遇到旧标识（dev.conch.prototype）的 Conch 时没有覆盖它，
+# 而是把新版另放进了 /Applications/Conch.localized。现在 /Applications/Conch.app
+# 已经是新版，把多出来的那份删掉，免得“App”和“应用程序”里出现两个 Conch。
+ID="@BUNDLE_ID@"
+APPS="${3%/}/Applications"
+
+bundle_id() {
+  /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Contents/Info.plist" 2>/dev/null
+}
+
+if [ "$(bundle_id "$APPS/Conch.app")" = "$ID" ] && [ "$(bundle_id "$APPS/Conch.localized/Conch.app")" = "$ID" ]; then
+  /bin/rm -rf "$APPS/Conch.localized/Conch.app" "$APPS/Conch.localized/.localized"
+  /bin/rmdir "$APPS/Conch.localized" 2>/dev/null
+  echo "Conch: removed the extra copy in $APPS/Conch.localized"
+fi
+exit 0

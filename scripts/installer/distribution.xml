@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  安装向导（scripts/package.sh 用 productbuild 打包）：介绍 → 安装类型 → 安装 → 摘要。
+  package.sh 打包时会把形如 @名字@ 的占位符换成实际的版本、标识和最低系统。
+-->
+<installer-gui-script minSpecVersion="2">
+    <title>Conch</title>
+    <welcome file="welcome.html" mime-type="text/html"/>
+    <conclusion file="conclusion.html" mime-type="text/html"/>
+    <!-- 左下角的图标，由 scripts/make-icon.swift 生成 -->
+    <background file="background.png" mime-type="image/png" alignment="bottomleft" scaling="none"/>
+    <background-darkAqua file="background.png" mime-type="image/png" alignment="bottomleft" scaling="none"/>
+
+    <!-- 装进这台 Mac 的“应用程序”文件夹；只有 Apple 芯片版，Intel 的 Mac 和系统太老的 Mac 上会直接提示装不了 -->
+    <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true"/>
+    <options customize="never" require-scripts="false" hostArchitectures="arm64"/>
+    <volume-check>
+        <allowed-os-versions>
+            <os-version min="@MIN_MACOS@"/>
+        </allowed-os-versions>
+    </volume-check>
+    <!--
+      “应用程序”里已经有 Conch.app 时：是这个软件（现在的标识，或 0.3 及以前的旧标识）就直接覆盖升级；
+      是别的同名软件就停下来说明原因，不去覆盖它
+    -->
+    <installation-check script="checkExistingApp()"/>
+    <script><![CDATA[
+function checkExistingApp() {
+    var path = '/Applications/Conch.app';
+    if (!system.files.fileExistsAtPath(path)) {
+        return true;
+    }
+    var info = system.files.plistAtPath(path + '/Contents/Info.plist');
+    var id = info ? info['CFBundleIdentifier'] : null;
+    if (id == '@BUNDLE_ID@' || id == 'dev.conch.prototype') {
+        return true;
+    }
+    my.result.type = 'Fatal';
+    my.result.title = '“应用程序”里已经有一个别的 Conch';
+    my.result.message = '“应用程序”文件夹里的 Conch.app 不是这个软件' + (id ? '（标识 ' + id + '）' : '') +
+        '。请先把它改名或移到别处，再重新安装。';
+    return false;
+}
+    ]]></script>
+
+    <choices-outline>
+        <line choice="default">
+            <line choice="@BUNDLE_ID@"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="@BUNDLE_ID@" visible="false">
+        <pkg-ref id="@BUNDLE_ID@"/>
+    </choice>
+    <pkg-ref id="@BUNDLE_ID@" version="@VERSION@" onConclusion="none">Conch-app.pkg</pkg-ref>
+    <product id="@BUNDLE_ID@" version="@VERSION@"/>
+</installer-gui-script>
